@@ -40,6 +40,23 @@ object Post extends Post with Table[Long, Post] {
     SELECT(p .* -> u.*).FROM(p JOIN u).WHERE(p.author_id EQ u.id).ORDER_BY(p.postedAt DESC).list.collect{ case (Some(po), Some(us)) => (po, us) }
   }
 
+  def allWithAuthorAndComments(): Seq[(Post, User, Seq[Comment])] = {
+    val p = Post AS "p"
+    val u = User AS "u"
+    val c = Comment AS "c"
+    val ls = SELECT(p.* AS "post", u.* AS "user", c.* AS "comment").
+             FROM((p JOIN u).ON("p.author_id = u.id").
+             LEFT_JOIN(c).ON("c.post_id = p.id")).
+             ORDER_BY(p.postedAt DESC).list
+
+    (for {
+        ((Some(p), Some(u)), xs) <- ls.groupBy{m => (m.get("post"), m.get("user"))}
+    } yield (p.asInstanceOf[Post],
+             u.asInstanceOf[User],
+             xs.flatMap(_.get("comment")).map(_.asInstanceOf[Comment])
+    )).toSeq
+  }
+
   def byIdWithAuthorAndComments(id: Long): Option[(Post, User, Seq[Comment])] = {
     val p = Post AS "p"
     val u = User AS "u"
@@ -80,24 +97,6 @@ class Comment extends Record[Long, Comment] with IdentityGenerator[Long, Comment
 
 object Comment extends Comment with Table[Long, Comment] {
   val fkey = CONSTRAINT("post_id_fkey").FOREIGN_KEY(Post, this.post_id -> Post.id)
-
-  def allWithAuthorAndComments(): Seq[(Post, User, Seq[Comment])] = {
-    val p = Post AS "p"
-    val u = User AS "u"
-    val c = Comment AS "c"
-    val ls = SELECT(p.* AS "post", u.* AS "user", c.* AS "comment").
-             FROM((p JOIN u).ON("p.author_id = u.id").
-             LEFT_JOIN(c).ON("c.post_id = p.id")).
-             ORDER_BY(p.postedAt DESC).list
-
-    (for {
-        ((Some(p), Some(u)), xs) <- ls.groupBy{m => (m.get("post"), m.get("user"))}
-    } yield (p.asInstanceOf[Post],
-             u.asInstanceOf[User],
-             xs.flatMap(_.get("comment")).map(_.asInstanceOf[Comment])
-    )).toSeq
-  }
-
 
 }
 
