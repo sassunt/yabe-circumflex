@@ -2,6 +2,7 @@ import com.github.sassunt.models._
 import ru.circumflex.orm._
 
 import java.util.Date
+import scala.xml.XML
 
 import org.scalatest._
 import org.scalatest.junit._
@@ -141,6 +142,51 @@ class BasicTests extends Spec with ShouldMatchers with BeforeAndAfterEach {
     comments.length should be (2)
     comments(0).author() should be ("Suzuki")
     comments(1).author() should be ("Satou")
+
+  }
+
+  it ("should load a complex graph from XML") {
+    Deployment.readAll(XML.load(getClass.getResourceAsStream("/test.data.xml"))).foreach(_.process)
+
+    val userCount = (User AS "u").map{ u => SELECT(COUNT(u.id)).FROM(u).unique }.get
+    userCount should be (2)
+    val postCount = (Post AS "p").map{ p => SELECT(COUNT(p.id)).FROM(p).unique }.get
+    postCount should be (3)
+    val commentCount = (Comment AS "c").map{ c => SELECT(COUNT(c.id)).FROM(c).unique }.get
+    commentCount should be (3)
+
+    User.connect("tarou@test.com", "secret") should not be (None)
+    User.connect("suzuki@test.com", "secret") should not be (None)
+    User.connect("suzuki@test.com", "badpassword") should be (None)
+    User.connect("tanaka@test.com", "secret") should be (None)
+
+    val allPostsWithAuthorAndComments = Post.allWithAuthorAndComments
+
+    allPostsWithAuthorAndComments.length should be (3)
+
+    val (post, author, comments) = allPostsWithAuthorAndComments(2)
+    println(post.title())
+    post.title() should be ("Scala Programming Language")
+    author.fullname() should be ("Tarou")
+    comments.length should be (2)
+
+    // We have a reference integrity error
+    intercept[org.h2.jdbc.JdbcSQLException] {
+      (User AS "u").map{ u => DELETE(u).WHERE(u.email EQ "tarou@test.com").execute }
+    }
+
+    val deletePostRowsNum =  (Post AS "p").map{ p => DELETE(p).WHERE(p.author_id EQ 1).execute }
+    deletePostRowsNum should be (2)
+
+    val deleteUserRowsNum = (User AS "u").map{ u => DELETE(u).WHERE(u.email EQ "tarou@test.com").execute }
+    deleteUserRowsNum should be (1)
+
+    val userCountAfterDelete = (User AS "u").map{ u => SELECT(COUNT(u.id)).FROM(u).unique }.get
+    userCountAfterDelete should be (1)
+    val postCountAfterDelete = (Post AS "p").map{ p => SELECT(COUNT(p.id)).FROM(p).unique }.get
+    postCountAfterDelete should be (1)
+    val commentCountAfterDelete = (Comment AS "c").map{ c => SELECT(COUNT(c.id)).FROM(c).unique }.get
+    commentCountAfterDelete should be (0)
 
   }
 }

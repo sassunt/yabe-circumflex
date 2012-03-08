@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<deployments>
+  <deployment id="data1" prefix="com.github.sassunt.models">
+    <User id="1" email="tarou@test.com" password="secret" fullname="Tarou" isAdmin="true"/>
+
+    <User id="2" email="suzuki@test.com" password="secret" fullname="Suzuki" isAdmin="false"/>
+
+    <Post id="1" title="Scala Programming Language" author_id="1" postedAt="2012-02-05">
+      <content>
+        Scala is a multi-paradigm programming language designed to
+        integrate features of object-oriented programming and functional programming.
+
+        The name Scala is a portmanteau of "scalable" and "language",
+        signifying that it is designed to grow with the demands of its users.
+     </content>
+    </Post>
+
+    <Post id="2" title="test data of YABE" author_id="1" postedAt="2012-02-08">
+      <content>test data !!</content>
+    </Post>
+
+    <Post id="3" title="YABE-Circumflex" author_id="2" postedAt="2012-03-09">
+      <content>
+        Yet another blog engine(for tutorial purpose) source code in circumflex
+      </content>
+    </Post>
+
+    <Comment id="1" author="Guest" content="You are right!" postedAt="2012-02-12">
+      <post_id>
+        <Post id="1"/>
+      </post_id>
+    </Comment>
+
+    <Comment id="2" author="scalachan" content="I knew that ..." postedAt="2012-02-12">
+      <post_id>
+        <Post id="1"/>
+      </post_id>
+    </Comment>
+
+    <Comment id="3" author="Tanaka" content="Is this test data ?" postedAt="2012-02-13">
+      <post_id>
+        <Post id="2"/>
+      </post_id>
+    </Comment>
+  </deployment>
+</deployments>
