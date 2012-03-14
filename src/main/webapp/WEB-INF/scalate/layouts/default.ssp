@@ -1,0 +1,39 @@
+<%@ val title: String = "" %>
+<%@ var body: String = "" %>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>${title}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" href="/css/main.css" />
+        <link rel="shortcut icon" type="image/png" href=""/>
+    </head>
+    <body>
+
+        <div id="header">
+            <div id="logo">
+                yabe.
+            </div>
+            <ul id="tools">
+                <li>
+                    <a href="#">Log in to write something</a>
+                </li>
+            </ul>
+            <div id="title">
+                <span class="about">About this blog</span>
+                <h1><a href="#">Yet another blog</a></h1>
+                <h2>We won't write about anything</h2>
+            </div>
+        </div>
+
+        <div id="main">
+            ${unescape(body)}
+        </div>
+
+        <p id="footer">
+            Yabe is a (not that) powerful blog engine(for tutorial purpose) built with the
+            <a href="http://circumflex.ru">Circumflex</a>
+        </p>
+
+    </body>
+</html>

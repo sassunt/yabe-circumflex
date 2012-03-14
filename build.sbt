@@ -13,6 +13,7 @@ libraryDependencies ++= Seq(
   "ru.circumflex" % "circumflex-core" % "2.1" % "compile",
   "ru.circumflex" % "circumflex-ftl" % "2.1" % "compile",
   "ru.circumflex" % "circumflex-orm" % "2.1" % "compile",
+  "org.fusesource.scalate" % "scalate-core" % "1.5.3" % "compile",
   "org.mortbay.jetty" % "jetty" % "6.1.26" % "container",
   "com.h2database" % "h2" % "1.3.164",
   "org.scalatest" %% "scalatest" % "1.7.1" % "test"

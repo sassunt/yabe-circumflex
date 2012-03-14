@@ -1,0 +1,61 @@
+#import(com.github.sassunt.models._)
+<%@ val post: (Post, User, Seq[Comment]) %>
+<%@ val mode: String = "full" %>
+<%
+  val commentsTitle = if(post._3.isEmpty) {
+      "no comments"
+  } else {
+      "%s comments, latest by %s" format (post._3.size, post._3.head.author())
+  }
+%>
+
+<div class="post ${mode}">
+  <h2 class="post-title">
+    <a href="#">${post._1.title()}</a>
+  </h2>
+  <div class="post-metadata">
+    <span class="post-author">by ${post._2.fullname()}</span>,
+    <span class="post-date">
+      ${"%td %<tm %<tY" format post._1.postedAt()}
+    </span>
+    #if (mode != "full")
+      <span class="post-comments">
+        ${commentsTitle}
+      </span>
+    #end
+  </div>
+  #if (mode != "teaser")
+    <div class="post-content">
+      <div class="about">Detail: </div>
+      ${unescape(post._1.content().replace("\n", "<br/>"))}
+    </div>
+  #end
+</div>
+
+#if (mode == "full")
+
+  <div class="comments">
+    <h3>
+      ${commentsTitle}
+    </h3>
+
+    <%--
+    #for (comment <- post._3)
+      <div class="comment">
+        <div class="comment-metadata">
+          <span class="comment-author">by ${comment.author()},</span>
+          <span class="comment-date">
+            ${"%td %<tm %<tY" format comment.postedAt()}
+          </span>
+        </div>
+        <div class="comment-content">
+          <div class="about">Detail: </div>
+          ${unescape(comment.content().replace("\n", "<br/>"))}
+        </div>
+      </div>
+    #end
+    --%>
+
+  </div>
+
+#end

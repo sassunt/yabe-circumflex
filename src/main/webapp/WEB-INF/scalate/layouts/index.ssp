@@ -1,0 +1,37 @@
+#import(com.github.sassunt.models._)
+<%@ val front: Option[(Post, User, Seq[Comment])] %>
+<%@ val older: Seq[(Post, User, Seq[Comment])] %>
+
+#set(title)
+  HOME
+#end
+
+#match (front)
+#case(Some(frt))
+
+  <% render("display.ssp", Map("post" -> frt, "mode" -> "home")) %>
+
+  <%
+    val psOpt = Option(older).filterNot(_.isEmpty)
+  %>
+  #for (posts <- psOpt)
+
+    <div class="older-posts">
+      <h3>Older posts <span class="from">from this blog</span></h3>
+
+      #for (post <- posts)
+        <% render("display.ssp", Map("post" -> post, "mode" -> "teaser")) %>
+      #end
+
+    </div>
+
+  #end
+
+#case(None)
+
+    <div class="empty">
+      There is currently nothing to read here.
+    </div>
+
+#end
+
